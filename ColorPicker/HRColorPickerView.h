@@ -40,13 +40,29 @@
 typedef struct timeval timeval;
 
 struct HRColorPickerStyle{
-    float width; // viewの横幅。デフォルトは320.0f;
-    float headerHeight; // 明度スライダーを含むヘッダ部分の高さ(デフォルトは106.0f。70.0fくらいが下限になると思います)
-    float colorMapTileSize; // カラーマップの中のタイルのサイズ。デフォルトは15.0f;
-    int colorMapSizeWidth; // カラーマップの中にいくつのタイルが並ぶか (not view.width)。デフォルトは20;
-    int colorMapSizeHeight; // 同じく縦にいくつ並ぶか。デフォルトは20;
-    float brightnessLowerLimit; // 明度の下限
-    float saturationUpperLimit; // 彩度の上限
+    /// viewの横幅。デフォルトは320.0f;
+    float width;
+    
+    /// 明度スライダーを含むヘッダ部分の高さ(デフォルトは106.0f。70.0fくらいが下限になると思います)
+    float headerHeight;
+    
+    /// カラーマップの中のタイルのサイズ。デフォルトは15.0f;
+    float colorMapTileSize;
+    
+    /// カラーマップの中にいくつのタイルが並ぶか (not view.width)。デフォルトは20;
+    int colorMapSizeWidth;
+    
+    /// 同じく縦にいくつ並ぶか。デフォルトは20;
+    int colorMapSizeHeight;
+    
+    /// margin between tiles
+    float margin;
+    
+    /// 明度の下限
+    float brightnessLowerLimit;
+    
+    /// 彩度の上限
+    float saturationUpperLimit;
 };
 
 typedef struct HRColorPickerStyle HRColorPickerStyle;
@@ -84,6 +100,7 @@ typedef struct HRColorPickerStyle HRColorPickerStyle;
     CGRect _brightnessPickerShadowFrame;
     CGRect _colorMapFrame;
     CGRect _colorMapSideFrame;
+    float _tileMargin;
     float _tileSize;
     float _brightnessLowerLimit;
     float _saturationUpperLimit;

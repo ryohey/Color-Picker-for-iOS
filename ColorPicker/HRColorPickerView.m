@@ -30,16 +30,6 @@
 #import "HRBrightnessCursor.h"
 #import "HRColorCursor.h"
 
-@interface HRColorPickerView()
-- (void)createCacheImage;
-- (void)update;
-- (void)updateBrightnessCursor;
-- (void)updateColorCursor;
-- (void)clearInput;
-- (void)setCurrentTouchPointInView:(UITouch *)touch;
-- (void)setNeedsDisplay15FPS;
-@end
-
 @implementation HRColorPickerView
 
 @synthesize delegate;
@@ -54,6 +44,7 @@
     style.colorMapSizeHeight = 20;
     style.brightnessLowerLimit = 0.4f;
     style.saturationUpperLimit = 0.95f;
+    style.margin = 2.0f;
     return style;
 }
 
@@ -134,6 +125,7 @@
                                         _colorMapFrame.size.width,
                                         _colorMapFrame.size.height);
         
+        _tileMargin = style.margin;
         _tileSize = style.colorMapTileSize;
         _brightnessLowerLimit = style.brightnessLowerLimit;
         _saturationUpperLimit = style.saturationUpperLimit;
@@ -395,7 +387,7 @@
             HSVColorAt(&pixelHsv, pixelX, pixelY, _saturationUpperLimit, _currentHsvColor.v);
             RGBColorFromHSVColor(&pixelHsv, &pixelRgb);
             CGContextSetRGBFillColor(context, pixelRgb.r, pixelRgb.g, pixelRgb.b, 1.0f);
-            CGContextFillRect(context, CGRectMake(_tileSize*i+_colorMapFrame.origin.x, height, _tileSize-2.0f, _tileSize-2.0f));
+            CGContextFillRect(context, CGRectMake(_tileSize*i+_colorMapFrame.origin.x, height, _tileSize-_tileMargin, _tileSize-_tileMargin));
         }
     }
     

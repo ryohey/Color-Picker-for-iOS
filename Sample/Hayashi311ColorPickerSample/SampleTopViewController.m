@@ -57,12 +57,13 @@
         case 3:{
             HRColorPickerStyle style;
             style.width = 320.0f;
+            style.margin = 0;
             style.headerHeight = 106.0f;
-            style.colorMapTileSize = 5.0f;
-            style.colorMapSizeWidth = 20;
-            style.colorMapSizeHeight = 20;
-            style.brightnessLowerLimit = 0.4f;
-            style.saturationUpperLimit = 0.95f;
+            style.colorMapTileSize = 1.0f;
+            style.colorMapSizeWidth = 250;
+            style.colorMapSizeHeight = 250;
+            style.brightnessLowerLimit = 0.0f;
+            style.saturationUpperLimit = 1.0f;
             
             controller = [HRColorPickerViewController.alloc initWithColor:self.view.backgroundColor
                                                                     style:style
