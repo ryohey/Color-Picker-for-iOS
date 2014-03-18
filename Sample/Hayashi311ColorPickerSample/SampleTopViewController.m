@@ -59,9 +59,9 @@
             style.width = 320.0f;
             style.margin = 0;
             style.headerHeight = 106.0f;
-            style.colorMapTileSize = 1.0f;
-            style.colorMapSizeWidth = 250;
-            style.colorMapSizeHeight = 250;
+            style.colorMapTileSize = 3.0f;
+            style.colorMapSizeWidth = 100;
+            style.colorMapSizeHeight = 100;
             style.brightnessLowerLimit = 0.0f;
             style.saturationUpperLimit = 1.0f;
             
