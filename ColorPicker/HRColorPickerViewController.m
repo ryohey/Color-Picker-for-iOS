@@ -30,140 +30,60 @@
 
 @implementation HRColorPickerViewController
 
-@synthesize delegate;
-
-
-+ (HRColorPickerViewController *)colorPickerViewControllerWithColor:(UIColor *)color
-{
-    return [[HRColorPickerViewController alloc] initWithColor:color fullColor:NO saveStyle:HCPCSaveStyleSaveAlways];
-}
-
-+ (HRColorPickerViewController *)cancelableColorPickerViewControllerWithColor:(UIColor *)color
-{
-    return [[HRColorPickerViewController alloc] initWithColor:color fullColor:NO saveStyle:HCPCSaveStyleSaveAndCancel];
-}
-
-+ (HRColorPickerViewController *)fullColorPickerViewControllerWithColor:(UIColor *)color
-{
-    return [[HRColorPickerViewController alloc] initWithColor:color fullColor:YES saveStyle:HCPCSaveStyleSaveAlways];
-}
-
-+ (HRColorPickerViewController *)cancelableFullColorPickerViewControllerWithColor:(UIColor *)color
-{
-    return [[HRColorPickerViewController alloc] initWithColor:color fullColor:YES saveStyle:HCPCSaveStyleSaveAndCancel];
-}
-
-
-
-- (id)initWithDefaultColor:(UIColor *)defaultColor
-{
-    return [self initWithColor:defaultColor fullColor:NO saveStyle:HCPCSaveStyleSaveAlways];
-}
-
-- (id)initWithColor:(UIColor*)defaultColor fullColor:(BOOL)fullColor saveStyle:(HCPCSaveStyle)saveStyle
-
+- (id)initWithColor:(UIColor*)defaultColor style:(HRColorPickerStyle)style saveStyle:(HCPCSaveStyle)saveStyle
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
+        _style = style;
         _color = defaultColor;
-        _fullColor = fullColor;
         _saveStyle = saveStyle;
     }
     return self;
 }
 
-- (void)loadView
-{
-    CGRect frame = [[UIScreen mainScreen] applicationFrame];
-    frame.size.height -= 44.f;
-    
-    self.view = [[UIView alloc] initWithFrame:frame];
+- (void)viewDidLoad {
     
     HRRGBColor rgbColor;
     RGBColorFromUIColor(_color, &rgbColor);
     
-    HRColorPickerStyle style;
-    if (_fullColor) {
-        style = [HRColorPickerView fitScreenFullColorStyle];
-    }else{
-        style = [HRColorPickerView fitScreenStyle];
-    }
+    _colorPickerView = [[HRColorPickerView alloc] initWithStyle:_style defaultColor:rgbColor];
     
-    colorPickerView = [[HRColorPickerView alloc] initWithStyle:style defaultColor:rgbColor];
-    
-    [self.view addSubview:colorPickerView];
+    [self.view addSubview:_colorPickerView];
     
     if (_saveStyle == HCPCSaveStyleSaveAndCancel) {
         UIBarButtonItem *buttonItem;
         
-        buttonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
+        buttonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonTapped:)];
         self.navigationItem.leftBarButtonItem = buttonItem;
         
-        buttonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(save:)];
+        buttonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveButtonTapped:)];
         self.navigationItem.rightBarButtonItem = buttonItem;
     }
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     
     if (_saveStyle == HCPCSaveStyleSaveAlways) {
-        [self save:self];
+        [self saveColor];
     }
 }
 
-- (void)saveColor:(id)sender{
-    [self save];
-}
-
-- (void)save
-{
+- (void)saveColor {
     if (self.delegate) {
-        HRRGBColor rgbColor = [colorPickerView RGBColor];
-        [self.delegate setSelectedColor:[UIColor colorWithRed:rgbColor.r green:rgbColor.g blue:rgbColor.b alpha:1.0f]];
+        HRRGBColor rgbColor = [_colorPickerView RGBColor];
+        UIColor *color = [UIColor colorWithRed:rgbColor.r green:rgbColor.g blue:rgbColor.b alpha:1.0f];
+        [_delegate colorPickerViewController:self didSelectColor:color];
     }
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-- (void)save:(id)sender
-{
-    [self save];
+- (void)saveButtonTapped:(id)sender {
+    [self saveColor];
 }
 
-- (void)cancel:(id)sender
-{
+- (void)cancelButtonTapped:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
-}
-
-
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
-}
-
-
-#pragma mark - View lifecycle
-
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 @end

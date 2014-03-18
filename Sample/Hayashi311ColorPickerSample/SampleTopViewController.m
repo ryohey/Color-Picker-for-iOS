@@ -28,55 +28,57 @@
 
 #import "SampleTopViewController.h"
 #import "HRColorUtil.h"
+#import "HRColorPickerView.h"
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED < 60000
 #define NSTextAlignmentCenter    UITextAlignmentCenter
 #endif
 
-
 @implementation SampleTopViewController
-
 
 - (void)openColorPicker:(id)sender{
     HRColorPickerViewController* controller;
     switch ([sender tag]) {
-    case 0:
-        controller = [HRColorPickerViewController colorPickerViewControllerWithColor:[self.view backgroundColor]];
-        break;
-    case 1:
-        controller = [HRColorPickerViewController cancelableColorPickerViewControllerWithColor:[self.view backgroundColor]];
-        break;
-    case 2:
-        controller = [HRColorPickerViewController fullColorPickerViewControllerWithColor:[self.view backgroundColor]];
-        break;
-    case 3:
-        controller = [HRColorPickerViewController cancelableFullColorPickerViewControllerWithColor:[self.view backgroundColor]];
-        break;
-
-    default:
-        return;
-        break;
+        case 0:
+            controller = [HRColorPickerViewController.alloc initWithColor:self.view.backgroundColor
+                                                                    style:HRColorPickerView.defaultStyle
+                                                                saveStyle:HCPCSaveStyleSaveAlways];
+            break;
+        case 1:
+            controller = [HRColorPickerViewController.alloc initWithColor:self.view.backgroundColor
+                                                                    style:HRColorPickerView.fitScreenStyle
+                                                                saveStyle:HCPCSaveStyleSaveAlways];
+            break;
+        case 2:
+            controller = [HRColorPickerViewController.alloc initWithColor:self.view.backgroundColor
+                                                                    style:HRColorPickerView.fullColorStyle
+                                                                saveStyle:HCPCSaveStyleSaveAlways];
+            break;
+        case 3:{
+            HRColorPickerStyle style;
+            style.width = 320.0f;
+            style.headerHeight = 106.0f;
+            style.colorMapTileSize = 5.0f;
+            style.colorMapSizeWidth = 20;
+            style.colorMapSizeHeight = 20;
+            style.brightnessLowerLimit = 0.4f;
+            style.saturationUpperLimit = 0.95f;
+            
+            controller = [HRColorPickerViewController.alloc initWithColor:self.view.backgroundColor
+                                                                    style:style
+                                                                saveStyle:HCPCSaveStyleSaveAndCancel];
+            break;}
+            
+        default:
+            return;
+            break;
     }
     controller.delegate = self;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
 
 #pragma mark - View lifecycle
-
-/*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView
-{
-}
-*/
 
 - (UIButton *)createButtonWithTitle:(NSString *)title index:(int)index
 {
@@ -112,35 +114,14 @@
     [hexColorLabel setBackgroundColor:[UIColor colorWithWhite:1.0f alpha:0.4f]];
     [self.view addSubview:hexColorLabel];
     
-    [self setSelectedColor:[UIColor cyanColor]];
-}
-
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    self.view.backgroundColor = UIColor.whiteColor;
 }
 
 #pragma mark - Hayashi311ColorPickerDelegate
 
-- (void)setSelectedColor:(UIColor*)color{
+- (void)colorPickerViewController:(HRColorPickerViewController *)colorPickerViewController didSelectColor:(UIColor*)color {
     [self.view setBackgroundColor:color];
     [hexColorLabel setText:[NSString stringWithFormat:@"#%06x",HexColorFromUIColor(color)]];
 }
-
 
 @end

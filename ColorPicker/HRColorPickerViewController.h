@@ -27,51 +27,40 @@
 
 #import <UIKit/UIKit.h>
 #import "HRColorPickerMacros.h"
+#import "HRColorPickerView.h"
 
-@class HRColorPickerView;
+@class HRColorPickerViewController;
 
 @protocol HRColorPickerViewControllerDelegate
-- (void)setSelectedColor:(UIColor*)color;
-@end
 
-#define HRColorPickerDelegate HRColorPickerViewControllerDelegate
-// Delegateの名前変えました。すみません。
+- (void)colorPickerViewController:(HRColorPickerViewController *)colorPickerViewController didSelectColor:(UIColor*)color;
+
+@end
 
 typedef enum {
     HCPCSaveStyleSaveAlways,
     HCPCSaveStyleSaveAndCancel
 } HCPCSaveStyle;
 
-@interface HRColorPickerViewController : UIViewController {
-    id<HRColorPickerViewControllerDelegate> __weak delegate;
-    HRColorPickerView* colorPickerView;
-    
-    UIColor *_color;
-    BOOL _fullColor;
-    HCPCSaveStyle _saveStyle;
-}
-
-+ (HRColorPickerViewController *)colorPickerViewControllerWithColor:(UIColor *)color;
-+ (HRColorPickerViewController *)cancelableColorPickerViewControllerWithColor:(UIColor *)color;
-+ (HRColorPickerViewController *)fullColorPickerViewControllerWithColor:(UIColor *)color;
-+ (HRColorPickerViewController *)cancelableFullColorPickerViewControllerWithColor:(UIColor *)color;
+@interface HRColorPickerViewController : UIViewController
 
 /** Initialize controller with selected color. 
  * @param defaultColor selected color
- * @param fullColor If YES, browseable full color. If NO color was limited.
+ * @param style View Style
  * @param saveStyle If it's HCPCSaveStyleSaveAlways, save color when self is closing. If it's HCPCSaveStyleSaveAndCancel, shows Cancel and Save button.
  */
-- (id)initWithColor:(UIColor*)defaultColor fullColor:(BOOL)fullColor saveStyle:(HCPCSaveStyle)saveStyle;
+- (id)initWithColor:(UIColor*)defaultColor style:(HRColorPickerStyle)style saveStyle:(HCPCSaveStyle)saveStyle;
 
-/** @deprecated use -save: instead of this . */
-- (void)saveColor:(id)sender;
+- (void)saveColor;
 
-- (void)save;
-- (void)save:(id)sender;
-- (void)cancel:(id)sender;
+- (void)saveButtonTapped:(id)sender;
+- (void)cancelButtonTapped:(id)sender;
 
-
-@property (weak) id<HRColorPickerViewControllerDelegate> delegate;
+@property (nonatomic, weak) id<HRColorPickerViewControllerDelegate> delegate;
+@property (nonatomic, strong) HRColorPickerView* colorPickerView;
+@property (nonatomic, strong) UIColor *color;
+@property (nonatomic) HRColorPickerStyle style;
+@property (nonatomic) HCPCSaveStyle saveStyle;
 
 
 @end
