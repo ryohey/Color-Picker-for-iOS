@@ -380,50 +380,6 @@
     
     CGContextRestoreGState(context);
     
-    
-    /////////////////////////////////////////////////////////////////////////////
-    //
-    // カラーマップ
-    //
-    /////////////////////////////////////////////////////////////////////////////
-    
-    CGContextSaveGState(context);
-    
-    [[UIColor colorWithWhite:0.9f alpha:1.0f] set];
-    CGContextAddRect(context, _colorMapSideFrame);
-    CGContextDrawPath(context, kCGPathStroke);
-    CGContextRestoreGState(context);
-    
-    CGContextSaveGState(context);
-    
-    CGFloat tileSize = _colorMapView.tileSize;
-    CGFloat tileMargin = _colorMapView.tileMargin;
-    
-    float height;
-    int pixelCountX = _colorMapFrame.size.width / tileSize;
-    int pixelCountY = _colorMapFrame.size.height / tileSize;
-    
-    HRHSVColor pixelHsv;
-    HRRGBColor pixelRgb;
-    for (int j = 0; j < pixelCountY; ++j) {
-        height = tileSize * j + _colorMapFrame.origin.y;
-        float pixelY = (float)j/(pixelCountY-1); // Y(彩度)は0.0f~1.0f
-        for (int i = 0; i < pixelCountX; ++i) {
-            float pixelX = (float)i/pixelCountX; // X(色相)は1.0f=0.0fなので0.0f~0.95fの値をとるように
-            HSVColorAt(&pixelHsv, pixelX, pixelY, _colorMapView.saturationUpperLimit, _colorMapView.currentHsvColor.v);
-            RGBColorFromHSVColor(&pixelHsv, &pixelRgb);
-            CGContextSetRGBFillColor(context, pixelRgb.r, pixelRgb.g, pixelRgb.b, 1.0f);
-            CGContextFillRect(context, (CGRect){
-                tileSize * i + _colorMapFrame.origin.x,
-                height,
-                tileSize - tileMargin,
-                tileSize - tileMargin
-            });
-        }
-    }
-    
-    CGContextRestoreGState(context);
-    
     /////////////////////////////////////////////////////////////////////////////
     //
     // カレントのカラー
