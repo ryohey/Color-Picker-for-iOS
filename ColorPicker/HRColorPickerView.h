@@ -31,6 +31,7 @@
 #import "HRColorUtil.h"
 #import "HRColorPickerMacros.h"
 #import "HRColorMapView.h"
+#import "HRBrightnessPickerView.h"
 
 @class HRColorPickerView;
 
@@ -142,5 +143,6 @@ typedef struct HRColorPickerStyle HRColorPickerStyle;
 @property (nonatomic, weak) NSObject<HRColorPickerViewDelegate>* delegate;
 
 @property (nonatomic, strong) HRColorMapView *colorMapView;
+@property (nonatomic, strong) HRBrightnessPickerView *brightnessPickerView;
 
 @end

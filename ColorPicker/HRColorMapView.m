@@ -70,6 +70,8 @@
     
     _image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
+    
+    [self setNeedsDisplay];
 }
 
 - (void)drawRect:(CGRect)rect {

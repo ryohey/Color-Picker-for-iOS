@@ -110,10 +110,9 @@
                                                  headerPartsOriginY,
                                                  _brightnessPickerFrame.size.width + 40.0f,
                                                  _brightnessPickerFrame.size.height);
-        _brightnessPickerShadowFrame = CGRectMake(_brightnessPickerFrame.origin.x-5.0f,
-                                                  headerPartsOriginY-5.0f,
-                                                  _brightnessPickerFrame.size.width+10.0f,
-                                                  _brightnessPickerFrame.size.height+10.0f);
+        
+        _brightnessPickerView = [HRBrightnessPickerView.alloc initWithFrame:_brightnessPickerFrame];
+        [self addSubview:_brightnessPickerView];
         
         _colorMapFrame = CGRectMake(colorMapSpace + 1.0f, style.headerHeight, colorMapSize.width, colorMapSize.height);
         
@@ -158,9 +157,6 @@
         // 諸々初期化
         [self setBackgroundColor:[UIColor colorWithWhite:0.99f alpha:1.0f]];
         [self setMultipleTouchEnabled:FALSE];
-        
-        _brightnessPickerShadowImage = nil;
-        [self createCacheImage];
         
         [self updateBrightnessCursor];
         [self updateColorCursor];
@@ -208,32 +204,6 @@
 // プライベート
 //
 /////////////////////////////////////////////////////////////////////////////
-
-- (void)createCacheImage{
-    // 影のコストは高いので、事前に画像に書き出しておきます
-    
-    if (_brightnessPickerShadowImage != nil) {
-        return;
-    }
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(_brightnessPickerShadowFrame.size.width,
-                                                      _brightnessPickerShadowFrame.size.height),
-                                           FALSE,
-                                           [[UIScreen mainScreen] scale]);
-    CGContextRef brightness_picker_shadow_context = UIGraphicsGetCurrentContext();
-    CGContextTranslateCTM(brightness_picker_shadow_context, 0, _brightnessPickerShadowFrame.size.height);
-    CGContextScaleCTM(brightness_picker_shadow_context, 1.0, -1.0);
-    
-    HRSetRoundedRectanglePath(brightness_picker_shadow_context, 
-                                      CGRectMake(0.0f, 0.0f,
-                                                 _brightnessPickerShadowFrame.size.width,
-                                                 _brightnessPickerShadowFrame.size.height), 5.0f);
-    CGContextSetLineWidth(brightness_picker_shadow_context, 10.0f);
-    CGContextSetShadow(brightness_picker_shadow_context, CGSizeMake(0.0f, 0.0f), 10.0f);
-    CGContextDrawPath(brightness_picker_shadow_context, kCGPathStroke);
-    
-    _brightnessPickerShadowImage = CGBitmapContextCreateImage(brightness_picker_shadow_context);
-    UIGraphicsEndImageContext();
-}
 
 - (void)update{
     // タッチのイベントの度、更新されます
@@ -333,19 +303,6 @@
     //
     /////////////////////////////////////////////////////////////////////////////
     
-    CGContextSaveGState(context);
-    
-    HRSetRoundedRectanglePath(context, _brightnessPickerFrame, 5.0f);
-    CGContextClip(context);
-    
-    CGGradientRef gradient;
-    CGColorSpaceRef colorSpace;
-    size_t numLocations = 2;
-    CGFloat locations[2] = { 0.0, 1.0 };
-    colorSpace = CGColorSpaceCreateDeviceRGB();
-    
-    HRRGBColor darkColor;
-    HRRGBColor lightColor;
     UIColor* darkColorFromHsv = [UIColor colorWithHue:_colorMapView.currentHsvColor.h
                                            saturation:_colorMapView.currentHsvColor.s
                                            brightness:_brightnessLowerLimit
@@ -356,29 +313,8 @@
                                             brightness:1.0f
                                                  alpha:1.0f];
     
-    RGBColorFromUIColor(darkColorFromHsv, &darkColor);
-    RGBColorFromUIColor(lightColorFromHsv, &lightColor);
-    
-    CGFloat gradientColor[] = {
-        darkColor.r,darkColor.g,darkColor.b,1.0f,
-        lightColor.r,lightColor.g,lightColor.b,1.0f,
-    };
-    
-    gradient = CGGradientCreateWithColorComponents(colorSpace, gradientColor,
-                                                   locations, numLocations);
-    
-    CGPoint startPoint = CGPointMake(_brightnessPickerFrame.origin.x + _brightnessPickerFrame.size.width, _brightnessPickerFrame.origin.y);
-    CGPoint endPoint = CGPointMake(_brightnessPickerFrame.origin.x, _brightnessPickerFrame.origin.y);
-    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
-    
-    // GradientとColorSpaceを開放する
-    CGColorSpaceRelease(colorSpace);
-    CGGradientRelease(gradient);
-    
-    // 明度の内側の影 (キャッシュした画像を表示するだけ)
-    CGContextDrawImage(context, _brightnessPickerShadowFrame, _brightnessPickerShadowImage);
-    
-    CGContextRestoreGState(context);
+    _brightnessPickerView.gradientLayer.colors = @[(id)lightColorFromHsv.CGColor,
+                                                   (id)darkColorFromHsv.CGColor];
     
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -480,9 +416,5 @@
     // 何も実行しません
 }
 
-
-- (void)dealloc{
-    CGImageRelease(_brightnessPickerShadowImage);
-}
 
 @end
