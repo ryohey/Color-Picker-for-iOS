@@ -142,7 +142,9 @@ typedef struct HRColorPickerStyle HRColorPickerStyle;
 @property (getter = SaturationUpperLimit, setter = setSaturationUpperLimit:) float SaturationUpperLimit;
 @property (nonatomic, weak) NSObject<HRColorPickerViewDelegate>* delegate;
 
-@property (nonatomic, strong) HRColorMapView *colorMapView;
-@property (nonatomic, strong) HRBrightnessPickerView *brightnessPickerView;
+@property (nonatomic, strong, readonly) HRColorMapView *colorMapView;
+@property (nonatomic, strong, readonly) HRBrightnessPickerView *brightnessPickerView;
+@property (nonatomic, strong, readonly) UILabel *currentColorLabel;
+@property (nonatomic, strong, readonly) CALayer *currentColorLayer;
 
 @end

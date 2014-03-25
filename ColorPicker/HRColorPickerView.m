@@ -104,7 +104,29 @@
         CGSize colorMapSize = CGSizeMake(style.colorMapTileSize * style.colorMapSizeWidth, style.colorMapTileSize * style.colorMapSizeHeight);
         float colorMapSpace = (style.width - colorMapSize.width) / 2.0f;
         float headerPartsOriginY = (style.headerHeight - 40.0f)/2.0f;
-        _currentColorFrame = CGRectMake(10.0f, headerPartsOriginY, 40.0f, 40.0f);
+
+        _currentColorLayer = CALayer.layer;
+        _currentColorLayer.frame = (CGRect){
+            10.0f, headerPartsOriginY, 40.0f, 40.0f
+        };
+        _currentColorLayer.cornerRadius = 5.0;
+        _currentColorLayer.shadowOpacity = 0.2;
+        _currentColorLayer.shadowRadius = 1.0;
+        _currentColorLayer.shadowOffset = CGSizeZero;
+        _currentColorLayer.borderWidth = 2.0;
+        _currentColorLayer.borderColor = UIColor.whiteColor.CGColor;
+        [self.layer addSublayer:_currentColorLayer];
+        
+        _currentColorLabel = [UILabel.alloc initWithFrame:(CGRect){
+            57.0, headerPartsOriginY - 5.0,
+            120.0, 50.0
+        }];
+        _currentColorLabel.font = [UIFont boldSystemFontOfSize:12.0];
+        _currentColorLabel.numberOfLines = 0;
+        _currentColorLabel.textColor = UIColor.darkGrayColor;
+        _currentColorLabel.backgroundColor = UIColor.clearColor;
+        [self addSubview:_currentColorLabel];
+        
         _brightnessPickerFrame = CGRectMake(120.0f, headerPartsOriginY, style.width - 120.0f - 10.0f, 40.0f);
         _brightnessPickerTouchFrame = CGRectMake(_brightnessPickerFrame.origin.x - 20.0f,
                                                  headerPartsOriginY,
@@ -294,8 +316,6 @@
 
 - (void)drawRect:(CGRect)rect
 {
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    HRRGBColor currentRgbColor = [self RGBColor];
     
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -322,9 +342,8 @@
     //
     /////////////////////////////////////////////////////////////////////////////
     
-    CGContextSaveGState(context);
-    HRDrawSquareColorBatch(context, CGPointMake(CGRectGetMidX(_currentColorFrame), CGRectGetMidY(_currentColorFrame)), &currentRgbColor, _currentColorFrame.size.width/2.0f);
-    CGContextRestoreGState(context);
+    HRRGBColor currentRgbColor = [self RGBColor];
+    _currentColorLayer.backgroundColor = [UIColor colorWithRed:currentRgbColor.r green:currentRgbColor.g blue:currentRgbColor.b alpha:1.0].CGColor;
     
     /////////////////////////////////////////////////////////////////////////////
     //
@@ -332,13 +351,10 @@
     //
     /////////////////////////////////////////////////////////////////////////////
     
-    [[UIColor darkGrayColor] set];
-    
-    float textHeight = 20.0f;
-    float textCenter = CGRectGetMidY(_currentColorFrame) - 5.0f;
-    [[NSString stringWithFormat:@"R:%3d%%",(int)(currentRgbColor.r*100)] drawAtPoint:CGPointMake(_currentColorFrame.origin.x+_currentColorFrame.size.width+10.0f, textCenter - textHeight) withFont:[UIFont boldSystemFontOfSize:12.0f]];
-    [[NSString stringWithFormat:@"G:%3d%%",(int)(currentRgbColor.g*100)] drawAtPoint:CGPointMake(_currentColorFrame.origin.x+_currentColorFrame.size.width+10.0f, textCenter) withFont:[UIFont boldSystemFontOfSize:12.0f]];
-    [[NSString stringWithFormat:@"B:%3d%%",(int)(currentRgbColor.b*100)] drawAtPoint:CGPointMake(_currentColorFrame.origin.x+_currentColorFrame.size.width+10.0f, textCenter + textHeight) withFont:[UIFont boldSystemFontOfSize:12.0f]];
+    _currentColorLabel.text = [NSString stringWithFormat:@"R:%3.0f%%\nG:%3.0f%%\nB:%3.0f%%",
+                               currentRgbColor.r * 100,
+                               currentRgbColor.g * 100,
+                               currentRgbColor.b * 100];
 }
 
 
