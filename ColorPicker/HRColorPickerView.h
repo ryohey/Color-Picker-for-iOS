@@ -30,6 +30,7 @@
 #import <sys/time.h>
 #import "HRColorUtil.h"
 #import "HRColorPickerMacros.h"
+#import "HRColorMapView.h"
 
 @class HRColorPickerView;
 
@@ -88,7 +89,6 @@ typedef struct HRColorPickerStyle HRColorPickerStyle;
     
     // 色情報
     HRRGBColor _defaultRgbColor;
-    HRHSVColor _currentHsvColor;
     
     // カラーマップ上のカーソルの位置
     CGPoint _colorCursorPosition;
@@ -100,10 +100,7 @@ typedef struct HRColorPickerStyle HRColorPickerStyle;
     CGRect _brightnessPickerShadowFrame;
     CGRect _colorMapFrame;
     CGRect _colorMapSideFrame;
-    float _tileMargin;
-    float _tileSize;
     float _brightnessLowerLimit;
-    float _saturationUpperLimit;
     
     HRBrightnessCursor* _brightnessCursor;
     HRColorCursor* _colorCursor;
@@ -143,5 +140,7 @@ typedef struct HRColorPickerStyle HRColorPickerStyle;
 @property (getter = BrightnessLowerLimit, setter = setBrightnessLowerLimit:) float BrightnessLowerLimit;
 @property (getter = SaturationUpperLimit, setter = setSaturationUpperLimit:) float SaturationUpperLimit;
 @property (nonatomic, weak) NSObject<HRColorPickerViewDelegate>* delegate;
+
+@property (nonatomic, strong) HRColorMapView *colorMapView;
 
 @end
